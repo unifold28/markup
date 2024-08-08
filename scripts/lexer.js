@@ -64,6 +64,10 @@ Lexer._tokenizeInline = function(string){
 
                 content = string.slice(0, index);
                 step = index;
+            }else{
+                // If the token is not text (which is considered terminal), find any other tokens 
+                // inside. This is a recursive approach
+                var content = Lexer._tokenizeInline(content);
             }
 
             var token = new Token(data.type, content);

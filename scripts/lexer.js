@@ -19,12 +19,18 @@ Lexer.tokenize = function(string){
             var match = string.match(data.expression);
             if(match == null || match.index != 0) continue;
 
-            // The token's content is based on the first capture group
             var content = [];
-            // If the token has a capture group (has content), tokenize it as an inline
-            if(match[1] != undefined) content = Lexer._tokenizeInline(match[1]);
+            // If the token's element is not self-closing, add content to it
+            if(!data.isVoid){
+                // The token's content is based on the first capture group
+                // If the token has a capture group (has content), tokenize it as an inline
+                if(match[1] != undefined) content = Lexer._tokenizeInline(match[1]);
+            }
 
-            var token = new Token(data.type, content);
+            var attributes = match.groups;
+            if(attributes == undefined) attributes = {};
+
+            var token = new Token(data.type, content, attributes);
             tokens.push(token);
 
             // Shorten the string
@@ -70,7 +76,10 @@ Lexer._tokenizeInline = function(string){
                 var content = Lexer._tokenizeInline(content);
             }
 
-            var token = new Token(data.type, content);
+            var attributes = match.groups;
+            if(attributes == undefined) attributes = {};
+
+            var token = new Token(data.type, content, attributes);
             tokens.push(token);
 
             string = string.slice(step);

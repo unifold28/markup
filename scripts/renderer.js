@@ -11,9 +11,36 @@ Renderer.render = function(tree){
     for(var i = 0; i < tree.length; i++){
         var token = tree[i];
         // To get the contents, call the function recursively
-        var contents = Renderer.render(token.content);
+        var content = Renderer.render(token.content);
 
-        rendered += `${TOKEN_DATA[token.type].html(contents)}`;
+        rendered += `${Renderer._generateTag(token, content)}`;
     };
     return rendered;
+};
+
+// Generate an html string tag for a token (with attributes and content inserted)
+Renderer._generateTag = function(token, content){
+    // Make an exception for text token
+    if(token.type == "TEXT") return token.content;
+
+    var data = TOKEN_DATA[token.type];
+
+    // Generate attributes string
+    var attributes = "";
+    var keys = Object.keys(token.attributes)
+    for(var i = 0; i < keys.length; i++){
+        var attribute = keys[i];
+        var value = token.attributes[attribute];
+
+        attributes += ` ${attribute}="${value}"`;
+    }
+
+    // Generate the opening tag
+    var tag = `<${data.tag}${attributes}>`;
+    // If the tag is not self-closing, push content and the closing tag to it
+    if(!data.isVoid) tag += `${content}</${data.tag}>`;
+    // Also add line breaks, so that the html string looks prettier
+    if(data.scope == "BLOCK") tag += "\n";
+
+    return tag;
 };

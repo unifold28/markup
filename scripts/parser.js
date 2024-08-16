@@ -1,4 +1,4 @@
-// Parser takes in a source string and outputs a tree of tokens
+// Parser takes in a source string and outputs a tree of tokens, which is passed to the renderer
 var Parser = {};
 
 Parser.parse = function(source){
@@ -8,8 +8,8 @@ Parser.parse = function(source){
 
     while(source.length > 0){
         var isMatched = false;
-        for(var i = 0; i < TOKENS.length; i++){
-            var token = TOKENS[i];
+        for(var i = 0; i < TOKENS_LIST.length; i++){
+            var token = TOKENS_LIST[i];
             if(token.scope != "block") continue;
 
             var separator = "\n\n";
@@ -38,8 +38,8 @@ Parser._parseInline = function(source){
 
     while(source.length > 0){
         var isMatched = false;
-        for(var i = 0; i < TOKENS.length; i++){
-            var token = TOKENS[i];
+        for(var i = 0; i < TOKENS_LIST.length; i++){
+            var token = TOKENS_LIST[i];
             if(token.scope != "inline") continue;
 
             var match = source.match(token.expression);
@@ -74,8 +74,8 @@ Parser._parseInline = function(source){
 
 Parser._indexText = function(source){
     var indexes = [];
-    for(var i = 0; i < TOKENS.length; i++){
-        var token = TOKENS[i];
+    for(var i = 0; i < TOKENS_LIST.length; i++){
+        var token = TOKENS_LIST[i];
         if(token.scope != "inline" || token.type == "text") continue;
 
         var match = source.match(token.expression);

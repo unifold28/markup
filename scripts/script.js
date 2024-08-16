@@ -1,5 +1,11 @@
 // A sample source string
 var source = `
+! Markup examples
+
+---
+
+!! Headings
+
 ! Heading of level 1
 
 !! Heading of level 2
@@ -27,3 +33,5 @@ or nested: /italic, _italic and underlined_, italic/.
 `;
 
 var parsed = Parser.parse(source);
+var rendered = Renderer.render(parsed);
+document.getElementById("markup").innerHTML = rendered;

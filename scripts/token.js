@@ -33,12 +33,20 @@ const RULES_LIST = [
         validContent: [],
     },
     {
+        type: "image",
+        isBlock: true,
+        expression: /\[(?<alt>[^\n]+?)\]{(?<src>[^\n]+?)}/,
+        tag: "img",
+        isVoid: true,
+        validContent: [],
+    },
+    {
         type: "paragraph",
         isBlock: true,
         expression: /([\s\S]+?)/,
         tag: "p",
         isVoid: false,
-        validContent: ["line_break", "bold", "italic", "underlined", "strikethrough", "code", "text"],
+        validContent: ["line_break", "link", "bold", "italic", "underlined", "strikethrough", "code", "text"],
     },
 
     {
@@ -50,12 +58,20 @@ const RULES_LIST = [
         validContent: [],
     },
     {
+        type: "link",
+        isBlock: false,
+        expression: /\[([^\n]+?)\]\<(?<href>[^\n]+?)\>/,
+        tag: "a",
+        isVoid: false,
+        validContent: ["bold", "italic", "underlined", "strikethrough", "code", "text"],
+    },
+    {
         type: "bold",
         isBlock: false,
         expression: /\*([\s\S]+?)\*/,
         tag: "b",
         isVoid: false,
-        validContent: ["italic", "underlined", "strikethrough", "text"],
+        validContent: ["link", "italic", "underlined", "strikethrough", "code", "text"],
     },
     {
         type: "italic",
@@ -63,7 +79,7 @@ const RULES_LIST = [
         expression: /\/([\s\S]+?)\//,
         tag: "i",
         isVoid: false,
-        validContent: ["bold", "underlined", "strikethrough", "text"],
+        validContent: ["link", "bold", "underlined", "strikethrough", "code", "text"],
     },
     {
         type: "underlined",
@@ -71,7 +87,7 @@ const RULES_LIST = [
         expression: /_([\s\S]+?)_/,
         tag: "u",
         isVoid: false,
-        validContent: ["bold", "italic", "strikethrough", "text"],
+        validContent: ["link", "bold", "italic", "strikethrough", "code", "text"],
     },
     {
         type: "strikethrough",
@@ -79,7 +95,7 @@ const RULES_LIST = [
         expression: /~([\s\S]+?)~/,
         tag: "s",
         isVoid: false,
-        validContent: ["bold", "italic", "underlined", "text"],
+        validContent: ["link", "bold", "italic", "underlined", "code", "text"],
     },
     {
         type: "code",
@@ -106,8 +122,9 @@ for(var i = 0; i < RULES_LIST.length; i++){
 }
 
 class Token{
-    constructor(type, content){
+    constructor(type, content, attributes){
         this.type = type;
         this.content = content;
+        this.attributes = attributes;
     };
 };

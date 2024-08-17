@@ -42,9 +42,23 @@ This text is /italicized, _then both italicized and underlined_, and then only i
 
 This text is \`inline code\`.
 It can't contain \`*any* /other/ _text_ ~formattings~\`.
-And text formattings *\`can't\`* /\`contain\`/ _\`inline\`_ ~\`code\`~.
+
+---
+
+!! Links
+
+Here is a [link]<https://github.com/unifold28/markup> to this project's Github page.
+
+---
+
+!! Images
+
+Here is an image:
+
+[Bliss.]{https://upload.wikimedia.org/wikipedia/en/2/27/Bliss_%28Windows_XP%29.png}
 `;
 
 var parsed = Parser.parse(source);
 var rendered = Renderer.render(parsed);
+
 document.getElementById("markup").innerHTML = rendered;

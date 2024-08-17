@@ -32,7 +32,7 @@ Parser._parseRecursive = function(source, validContent){
             var match = source.match(expression);
             if(match == null || match.index != 0) continue;
 
-            var token = new Token(rule.type, []);
+            var token = new Token(rule.type, [], match.groups || []);
             var step = match[0].length;
             if(rule.type == "text"){
                 var index = Parser._indexText(match[1], validContent);

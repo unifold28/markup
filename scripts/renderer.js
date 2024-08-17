@@ -8,18 +8,30 @@ Renderer.render = function(tree){
         var rule = RULES[token.type];
 
         if(token.type == "text") html += Renderer._tag(token.type, token.content);
-        else if(rule.isVoid) html += Renderer._tag(token.type);
-        else html += Renderer._tag(token.type, Renderer.render(token.content));
+        else if(rule.isVoid){
+            html += Renderer._tag(token.type, [], token.attributes);
+        }
+        else html += Renderer._tag(token.type, Renderer.render(token.content), token.attributes);
     };
     return html;
 };
 
-Renderer._tag = function(type, content){
-    if(type == "text") return content;
+Renderer._tag = function(type, inner, attributes){
+    if(type == "text") return inner;
 
     var rule = RULES[type];
-    var tag = `<${rule.tag}>`;
-    if(!rule.isVoid) tag += `${content}</${rule.tag}>`;
+    var tag = `<${rule.tag}`;
+
+    var keys = Object.keys(attributes);
+    for(var i = 0; i < keys.length; i++){
+        var name = keys[i];
+        var value = attributes[name];
+
+        tag += ` ${name}="${value}"`;
+    }
+
+    tag += ">";
+    if(!rule.isVoid) tag += `${inner}</${rule.tag}>`;
 
     return tag;
 };

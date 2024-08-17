@@ -16,20 +16,33 @@ var source = `
 
 !! Paragraphs
 
-A paragraph with no line breaks.
+This is a paragraph with no line breaks.
 
-A paragraph with
-line breaks
+This is a paragraph
+with line breaks
 like this.
 
 ---
 
-!! Text formattings
+!! Inline text
 
-Text formattings: *bold*, /italic/, _underline_, ~strikethrough~, \`code\`.
+!!! Text formattings
 
-Text formattings can be combined: */bold and italic/*,
-or nested: /italic, _italic and underlined_, italic/.
+This text is *bold*.
+This text is /italicized/.
+This text is _underlined_.
+This text is ~struckthrough~.
+
+!!! Combined and nested formattings
+
+This text is */bold and italic/*.
+This text is /italicized, _then both italicized and underlined_, and then only italicized again/.
+
+!!! Inline code
+
+This text is \`inline code\`.
+It can't contain \`*any* /other/ _text_ ~formattings~\`.
+And text formattings *\`can't\`* /\`contain\`/ _\`inline\`_ ~\`code\`~.
 `;
 
 var parsed = Parser.parse(source);

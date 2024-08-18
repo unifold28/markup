@@ -32,17 +32,12 @@ Parser._parseRecursive = function(source, validContent){
             var match = source.match(expression);
             if(match == null || match.index != 0) continue;
 
-            var token = new Token(rule.type, [], match.groups || []);
-            var step = match[0].length;
-            if(rule.type == "text"){
-                var index = Parser._indexText(match[1], validContent);
-                if(index == 0) continue;
+            var handler = rule.handler;
+            var handled = handler(rule.type, match);
+            if(handled == null) continue;
 
-                token.content = match[1].slice(0, index);
-                step = index;
-            }else if(!rule.isVoid){
-                token.content = Parser._parseRecursive(match[1], rule.validContent);
-            };
+            var token = handled.token;
+            var step = handled.step;
 
             tokens.push(token);
 
@@ -56,20 +51,4 @@ Parser._parseRecursive = function(source, validContent){
     }
 
     return tokens;
-};
-
-Parser._indexText = function(source, validContent){
-    var indexes = [];
-    for(var i = 0; i < validContent.length; i++){
-        var rule = RULES[validContent[i]];
-        if(rule.type == "text") continue;
-
-        var match = source.match(rule.expression);
-        if(match == null) continue;
-
-        indexes.push(match.index);
-    }
-    if(indexes.length == 0) return source.length;
-
-    return Math.min(...indexes);
 };

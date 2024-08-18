@@ -7,7 +7,7 @@ Renderer.render = function(tree){
         var token = tree[i];
         var rule = RULES[token.type];
 
-        if(token.type == "text") html += Renderer._tag(token.type, token.content);
+        if(rule.tag == "") html += Renderer._tag(token.type, token.content);
         else if(rule.isVoid){
             html += Renderer._tag(token.type, [], token.attributes);
         }
@@ -17,9 +17,9 @@ Renderer.render = function(tree){
 };
 
 Renderer._tag = function(type, inner, attributes){
-    if(type == "text") return inner;
-
     var rule = RULES[type];
+    if(rule.tag == "") return inner;
+
     var tag = `<${rule.tag}`;
 
     var keys = Object.keys(attributes);

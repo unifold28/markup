@@ -41,13 +41,36 @@ This text is /italicized, _then both italicized and underlined_, and then only i
 !!! Inline code
 
 This text is \`inline code\`.
-It can't contain \`*any* /other/ _text_ ~formattings~\`.
 
 ---
 
 !! Links
 
 Here is a [link]<https://github.com/unifold28/markup> to this project's Github page.
+
+---
+
+!! Blockquotes
+
+!!! Simple blockquotes
+
+| A blockquote.
+
+| Blockquotes can have
+| line breaks
+| like this.
+
+!!! Block elements inside blockquotes
+
+| Blockquotes can also contain other block elements
+| 
+| !!! Like headings, for example
+| 
+| They can also contain themselves.
+| 
+| | Which can be used to create nested blockquotes.
+| | 
+| | | Nesting can be as deep as you want.
 
 ---
 

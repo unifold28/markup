@@ -32,7 +32,7 @@ const HANDLERS = {
 
         return {token: token, step: step};
     },
-    code_span: function(type, match){
+    codespan: function(type, match){
         var token = new Token(type, match[1], []);
         var step = match[0].length
         return {token: token, step: step};
@@ -41,6 +41,13 @@ const HANDLERS = {
         var rule = RULES[type];
         var trimmed = match[1].replace(/^\| /g, "").replace(/\n\| /g, "\n");
         var content = Parser._parseRecursive(trimmed, rule.validContent);
+        var token = new Token(type, content, []);
+        var step = match[0].length;
+
+        return {token: token, step: step};
+    },
+    escape: function(type, match){
+        var content = match[1];
         var token = new Token(type, content, []);
         var step = match[0].length;
 
@@ -78,13 +85,49 @@ const RULES_LIST = [
         handler: HANDLERS.default,
     },
     {
+        type: "heading_4",
+        isBlock: true,
+        expression: /!!!! ([\s\S]+?)/,
+        tag: "h4",
+        isVoid: false,
+        validContent: ["bold", "italic", "underlined", "strikethrough", "inline_code", "text"],
+        handler: HANDLERS.default,
+    },
+    {
+        type: "unordered_list",
+        isBlock: true,
+        expression: /((?:- .+\n)*- .+)/,
+        tag: "ul",
+        isVoid: false,
+        validContent: ["unordered_list_item"],
+        handler: HANDLERS.default,
+    },
+    {
+        type: "ordered_list",
+        isBlock: true,
+        expression: /((?:# .+\n)*# .+)/,
+        tag: "ol",
+        isVoid: false,
+        validContent: ["ordered_list_item"],
+        handler: HANDLERS.default,
+    },
+    {
         type: "blockquote",
         isBlock: true,
         expression: /((?:\| .*\n)*\| .*)/,
         tag: "blockquote",
         isVoid: false,
-        validContent: ["heading_1", "heading_2", "heading_3", "blockquote", "horizontal_line", "image", "paragraph"],
+        validContent: ["heading_1", "heading_2", "heading_3", "heading_4", "unordered_list", "ordered_list", "blockquote", "horizontal_line", "image", "paragraph"],
         handler: HANDLERS.blockquote,
+    },
+    {
+        type: "codeblock",
+        isBlock: true,
+        expression: /```\n([\s\S]+)\n```/,
+        tag: "pre",
+        isVoid: false,
+        validContent: ["codespan"],
+        handler: HANDLERS.default,
     },
     {
         type: "horizontal_line",
@@ -98,7 +141,7 @@ const RULES_LIST = [
     {
         type: "image",
         isBlock: true,
-        expression: /\[(?<alt>[^\n]+?)\]{(?<src>[^\n]+?)}/,
+        expression: /\[(?<alt>.+?)\]{(?<src>.+?)}/,
         tag: "img",
         isVoid: true,
         validContent: [],
@@ -110,7 +153,7 @@ const RULES_LIST = [
         expression: /([\s\S]+?)/,
         tag: "p",
         isVoid: false,
-        validContent: ["line_break", "link", "bold", "italic", "underlined", "strikethrough", "inline_code", "text"],
+        validContent: ["line_break", "link", "bold", "italic", "underlined", "strikethrough", "inline_code", "escape", "text"],
         handler: HANDLERS.default,
     },
 
@@ -126,10 +169,28 @@ const RULES_LIST = [
     {
         type: "link",
         isBlock: false,
-        expression: /\[([^\n]+?)\]\<(?<href>[^\n]+?)\>/,
+        expression: /\[(.+?)\]\<(?<href>.+?)\>/,
         tag: "a",
         isVoid: false,
-        validContent: ["bold", "italic", "underlined", "strikethrough", "text"],
+        validContent: ["bold", "italic", "underlined", "strikethrough", "escape", "text"],
+        handler: HANDLERS.default,
+    },
+    {
+        type: "unordered_list_item",
+        isBlock: false,
+        expression: /(?:\n|^)- (.+)/,
+        tag: "li",
+        isVoid: false,
+        validContent: ["link", "bold", "italic", "underlined", "strikethrough", "inline_code", "escape", "text"],
+        handler: HANDLERS.default,
+    },
+    {
+        type: "ordered_list_item",
+        isBlock: false,
+        expression: /(?:\n|^)# (.+)/m,
+        tag: "li",
+        isVoid: false,
+        validContent: ["link", "bold", "italic", "underlined", "strikethrough", "inline_code", "escape", "text"],
         handler: HANDLERS.default,
     },
     {
@@ -138,7 +199,7 @@ const RULES_LIST = [
         expression: /\*([\s\S]+?)\*/,
         tag: "b",
         isVoid: false,
-        validContent: ["link", "italic", "underlined", "strikethrough", "inline_code", "text"],
+        validContent: ["link", "italic", "underlined", "strikethrough", "inline_code", "escape", "text"],
         handler: HANDLERS.default,
     },
     {
@@ -147,7 +208,7 @@ const RULES_LIST = [
         expression: /\/([\s\S]+?)\//,
         tag: "i",
         isVoid: false,
-        validContent: ["link", "bold", "underlined", "strikethrough", "inline_code", "text"],
+        validContent: ["link", "bold", "underlined", "strikethrough", "inline_code", "escape", "text"],
         handler: HANDLERS.default,
     },
     {
@@ -156,7 +217,7 @@ const RULES_LIST = [
         expression: /_([\s\S]+?)_/,
         tag: "u",
         isVoid: false,
-        validContent: ["link", "bold", "italic", "strikethrough", "inline_code", "text"],
+        validContent: ["link", "bold", "italic", "strikethrough", "inline_code", "escape", "text"],
         handler: HANDLERS.default,
     },
     {
@@ -165,7 +226,7 @@ const RULES_LIST = [
         expression: /~([\s\S]+?)~/,
         tag: "s",
         isVoid: false,
-        validContent: ["link", "bold", "italic", "underlined", "inline_code", "text"],
+        validContent: ["link", "bold", "italic", "underlined", "inline_code", "escape", "text"],
         handler: HANDLERS.default,
     },
     {
@@ -174,17 +235,26 @@ const RULES_LIST = [
         expression: /`([\s\S]+?)`/,
         tag: "code",
         isVoid: false,
-        validContent: ["code_span"],
+        validContent: ["codespan"],
         handler: HANDLERS.default,
     },
     {
-        type: "code_span",
+        type: "escape",
+        isBlock: false,
+        expression: /\:(.)/,
+        tag: "",
+        isVoid: false,
+        validContent: [],
+        handler: HANDLERS.escape,
+    },
+    {
+        type: "codespan",
         isBlock: false,
         expression: /([\s\S]+)/,
         tag: "",
         isVoid: true,
         validContent: [],
-        handler: HANDLERS.code_span,
+        handler: HANDLERS.codespan,
     },
     {
         type: "text",

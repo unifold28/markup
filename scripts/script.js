@@ -6,11 +6,13 @@ var source = `
 
 !! Headings
 
-! Heading of level 1
+! A heading of level 1
 
-!! Heading of level 2
+!! A heading of level 2
 
-!!! Heading of level 3
+!!! A heading of level 3
+
+!!!! A heading of level 4
 
 ---
 
@@ -50,6 +52,24 @@ Here is a [link]<https://github.com/unifold28/markup> to this project's Github p
 
 ---
 
+!! Lists
+
+An unordered list.
+
+- Unordered list item 1
+- Unordered list item 2
+- Unordered list item 3
+- Unordered list item 4
+
+An ordered list.
+
+# Ordered list item 1
+# Ordered list item 2
+# Ordered list item 3
+# Ordered list item 4
+
+---
+
 !! Blockquotes
 
 !!! Simple blockquotes
@@ -62,23 +82,62 @@ Here is a [link]<https://github.com/unifold28/markup> to this project's Github p
 
 !!! Block elements inside blockquotes
 
-| Blockquotes can also contain other block elements
+Blockqotes can also contain block elements inside.
+
+| !!!! A heading inside a blockquote
 | 
-| !!! Like headings, for example
+| A paragraph.
 | 
-| They can also contain themselves.
+| - List item 1
+| - List item 2
+| - List item 3
+| - List item 4
+
+!!! Nested blockquotes
+
+| Blockquotes can contain other blockquotes inside them, too.
 | 
-| | Which can be used to create nested blockquotes.
+| | This can be used to create nested blockquotes like this.
 | | 
 | | | Nesting can be as deep as you want.
+| | | 
+| | | | ...
+| | | | 
+| | | | | ...
+
+---
+
+!! Codeblocks
+
+Here is a codeblock containing a piece of source code of this project.
+
+\`\`\`
+class Token{
+    constructor(type, content, attributes){
+        this.type = type;
+        this.content = content;
+        this.attributes = attributes;
+    };
+};
+\`\`\`
 
 ---
 
 !! Images
 
-Here is an image:
+Here is an image.
 
 [Bliss.]{https://upload.wikimedia.org/wikipedia/en/2/27/Bliss_%28Windows_XP%29.png}
+
+---
+
+!! Escaping
+
+Escaping markup forces a character to be shown literary in rendered result.
+
+:!!!! Without escaping, this would be a heading.
+
+Without escaping, this :*text:* would be bold.
 `;
 
 var parsed = Parser.parse(source);

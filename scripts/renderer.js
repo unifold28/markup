@@ -7,18 +7,29 @@ Renderer.render = function(tree){
         var token = tree[i];
         var rule = RULES[token.type];
 
-        if(rule.tag == "") html += Renderer._tag(token.type, token.content);
-        else if(rule.isVoid){
+        if(rule.tag == ""){
+            html += Renderer._tag(token.type, token.content);
+        }else if(rule.isVoid){
             html += Renderer._tag(token.type, [], token.attributes);
+        }else{
+            html += Renderer._tag(token.type, Renderer.render(token.content), token.attributes);
         }
-        else html += Renderer._tag(token.type, Renderer.render(token.content), token.attributes);
     };
     return html;
 };
 
+Renderer._escapeHtml = function(source){
+    return source
+    .replace(/&/g, "&amp;")
+    .replace(/\</g, "&lt;")
+    .replace(/\>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&apos;");
+};
+
 Renderer._tag = function(type, inner, attributes){
     var rule = RULES[type];
-    if(rule.tag == "") return inner;
+    if(rule.tag == "" || rule.type == "escape") return Renderer._escapeHtml(inner);
 
     var tag = `<${rule.tag}`;
 
